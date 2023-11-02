@@ -133,7 +133,7 @@ int cmd_replay(int argc, const char **argv, const char *prefix)
 	struct merge_result result;
 	struct strbuf reflog_msg = STRBUF_INIT;
 	struct strbuf branch_name = STRBUF_INIT;
-	int ret = 0;
+	int i, ret = 0;
 
 	const char * const replay_usage[] = {
 		N_("git replay --onto <newbase> <oldbase> <branch> # EXPERIMENTAL"),
@@ -173,21 +173,31 @@ int cmd_replay(int argc, const char **argv, const char *prefix)
 
 	repo_init_revisions(the_repository, &revs, prefix);
 
-	revs.verbose_header = 1;
-	revs.max_parents = 1;
-	revs.cherry_mark = 1;
-	revs.limited = 1;
-	revs.reverse = 1;
-	revs.right_only = 1;
-	revs.sort_order = REV_SORT_IN_GRAPH_ORDER;
-	revs.topo_order = 1;
-
 	strvec_pushl(&rev_walk_args, "", argv[2], "--not", argv[1], NULL);
+
+	/*
+	 * TODO: For now, let's warn when we see an option that we are
+	 * going to override after setup_revisions() below. In the
+	 * future we might want to either die() or allow them if we
+	 * think they could be useful though.
+	 */
+	for (i = 0; i < argc; i++) {
+		if (!strcmp(argv[i], "--reverse") || !strcmp(argv[i], "--date-order") ||
+		    !strcmp(argv[i], "--topo-order") || !strcmp(argv[i], "--author-date-order") ||
+		    !strcmp(argv[i], "--full-history"))
+			warning(_("option '%s' will be overridden"), argv[i]);
+	}
 
 	if (setup_revisions(rev_walk_args.nr, rev_walk_args.v, &revs, NULL) > 1) {
 		ret = error(_("unhandled options"));
 		goto cleanup;
 	}
+
+	/* requirements/overrides for revs */
+	revs.reverse = 1;
+	revs.sort_order = REV_SORT_IN_GRAPH_ORDER;
+	revs.topo_order = 1;
+	revs.simplify_history = 0;
 
 	strvec_clear(&rev_walk_args);
 
