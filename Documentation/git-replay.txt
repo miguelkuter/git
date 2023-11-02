@@ -14,7 +14,10 @@ SYNOPSIS
 DESCRIPTION
 -----------
 
-Takes a range of commits and replays them onto a new location.
+Takes a range of commits and replays them onto a new location. Leaves
+the working tree and the index untouched, and updates no
+references. The output of this command is meant to be used as input to
+`git update-ref --stdin`, which would update the relevant branches.
 
 THIS COMMAND IS EXPERIMENTAL. THE BEHAVIOR MAY CHANGE.
 
