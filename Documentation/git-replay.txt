@@ -1,0 +1,38 @@
+git-replay(1)
+=============
+
+NAME
+----
+git-replay - EXPERIMENTAL: Replay commits on a new base, works with bare repos too
+
+
+SYNOPSIS
+--------
+[verse]
+'git replay' --onto <newbase> <oldbase> <branch> # EXPERIMENTAL
+
+DESCRIPTION
+-----------
+
+Takes a range of commits and replays them onto a new location.
+
+THIS COMMAND IS EXPERIMENTAL. THE BEHAVIOR MAY CHANGE.
+
+OPTIONS
+-------
+
+--onto <newbase>::
+	Starting point at which to create the new commits.  May be any
+	valid commit, and not just an existing branch name.
+
+EXIT STATUS
+-----------
+
+For a successful, non-conflicted replay, the exit status is 0.  When
+the replay has conflicts, the exit status is 1.  If the replay is not
+able to complete (or start) due to some kind of error, the exit status
+is something other than 0 or 1.
+
+GIT
+---
+Part of the linkgit:git[1] suite
